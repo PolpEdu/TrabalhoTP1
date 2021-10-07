@@ -19,6 +19,20 @@ def criarhist(data, alfabeto):
     # plt.show()
 
 
+def limitebits(data, alfab):
+    H = 0
+    for k in alfab:
+        p = list(data).count(k) / len(data)
+        if p == 0:  # o elemento do alfabeto não existe na fonte de informação
+            continue
+        i = math.log2(1 / p)
+        H += i * p
+
+    print(f"O limite mínimo teórico para o número"
+          f" médio de bits por símbolo da fonte dada é:\n{H:.5f} bits/simbolo")
+    return H
+
+
 def lerficheiro(nome):
     ext = nome.split(".")[1]
     PATH = "./data/" + nome
@@ -32,7 +46,7 @@ def lerficheiro(nome):
     elif ext == "bmp":
         # bmp os valores usados (preto a branco) vão de 0 a 255
         alfabeto = [x for x in range(0, 255 + 1)]
-        datasquare = mpimg.imread(PATH) 
+        datasquare = mpimg.imread(PATH)
         data = datasquare.flatten()
 
     elif ext == "wav":
