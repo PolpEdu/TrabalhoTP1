@@ -4,19 +4,25 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 from scipy.io import wavfile
 import math
+import time
 
 data = np.random.randint(0, 10, size=20)
 
 
 def criarhist(data, alfabeto):
-    print("fjlsnka")
-    # ocorrencias = [i.count for x in data for i in alfabeto]
+    ocorrencias = [data.count(i) for i in alfabeto]
     # print(ocorrencias)
 
-    # for x in data:
-    #    plt.xtics()
-    #    plt.bar()
-    # plt.show()
+    # ppapra aparecer todos:
+    # plt.xticks(range(len(ocorrencias)), alfabeto)
+
+    wh = (14, 8)
+    plt.figure(figsize=wh)
+    plt.bar(alfabeto, ocorrencias, ec="k")
+
+    plt.xlabel('Alfabeto', fontsize=15)
+    plt.ylabel('Ocorrencias', fontsize=15)
+    plt.show()
 
 
 def limitebits(data, alfab):
@@ -41,13 +47,19 @@ def lerficheiro(nome):
         # Caracteres ASCII, existe 127 caracteres ASCII
         alfabeto = [x for x in range(0, 127 + 1)]
         with open(PATH, "r", encoding='ASCII') as f:
-            data = f.read()
+            rd = f.read()
+            f.close()
+
+        #espaços contam?
+        data = [ord(char) for char in rd]
 
     elif ext == "bmp":
         # bmp os valores usados (preto a branco) vão de 0 a 255
         alfabeto = [x for x in range(0, 255 + 1)]
         datasquare = mpimg.imread(PATH)
-        data = datasquare.flatten()
+        d = datasquare.flatten()
+        # print(type(d))
+        data = list(d)
 
     elif ext == "wav":
 
@@ -55,22 +67,38 @@ def lerficheiro(nome):
 
         # como o dtype é sempre int*BITS*
         # vou e tiro o numero de bits por cada amostra para conseguir o maior valor
-        print(str(info.dtype).split("int")[1])
+        # print(str(info.dtype).split("int")[1])
         max = math.pow(2, int(str(info.dtype).split("int")[1]))
 
         # Wav normalizado vai de 0 a max+1.
         alfabeto = [x for x in range(0, int(max + 1))]
 
-        data = [fs, info]
+        d = [fs, info]
+
+        data = list(d[1])
+        # print(type(data))
 
     print(f"Alfabeto:{alfabeto}\n"
           f"Data:{data}")
+
     return alfabeto, data
 
 
-# def entropia(data):
+def entropia(data, alfab):
+    H = 0
+    for k in alfab:
+        p = list(data).count(k) / len(data)
+        if p == 0:  # o elemento do alfabeto não existe na fonte de informação
+            continue
+        i = math.log2(1 / p)
+        H += i * p
+
+    print(f"O limite mínimo teórico para o número"
+          f" médio de bits por símbolo da fonte dada é:\n{H:.5f} bits/simbolo")
+    return H
 
 
 if __name__ == "__main__":
     [alfabeto, data] = lerficheiro("english.txt")
+    entropia(data, alfabeto)
     criarhist(data, alfabeto)
