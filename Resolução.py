@@ -54,7 +54,6 @@ def lerficheiro(nome):
             rd = f.read()
             f.close()
 
-
         data = [ord(char) for char in rd]
 
     elif ext == "bmp":
@@ -105,16 +104,37 @@ def entropia(data, alfab):
 def nrmediobits(data):
     codec = HuffmanCodec.from_data(data)
     symbols, lenghts = codec.get_code_len()
-    # print(symbols)
+    print(symbols)
     # print(lenghts)
     return symbols, lenghts
 
 
+def agrupar(data):
+    if len(data) % 2 == 1:
+        data = data[:-1]  # tiro o ultimo elemento
+
+    novafonte = []
+    for x in data:
+        if x % 2 == 0:
+            novafonte.append(x)
+        else:
+            novafonte.append(x)
+
+    print(f"{novafonte}")
+    return novafonte
+
+
 if __name__ == "__main__":
-    [alfabeto, data] = lerficheiro("guitarSolo.wav")
+    [alfabeto, data] = lerficheiro("english.txt")
     entropia(data, alfabeto)
     criarhist(data, alfabeto)
+
+    # ex 4
 
     symbols, lenght = nrmediobits(data)
     print("Usando a codificação de Huffman...")
     entropia(symbols, alfabeto)  # TODO: esta bem? ver se dá valores aceitaveis.
+
+    # ex 5
+    dataagrupada = agrupar(data) # TODO: esta mal provavelmente
+    entropia(dataagrupada, alfabeto)
