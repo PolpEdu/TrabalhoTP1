@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 from scipy.io import wavfile
 import math
+from huffmancodec import *
 import time
 
 data = np.random.randint(0, 10, size=20)
@@ -46,11 +47,14 @@ def lerficheiro(nome):
     if ext == "txt":
         # Caracteres ASCII, existe 127 caracteres ASCII
         alfabeto = [x for x in range(0, 127 + 1)]
+
+        # TODO: espaços contam?
+        alfabeto.remove(32)  # tirar o espaço. ascii = 32
         with open(PATH, "r", encoding='ASCII') as f:
             rd = f.read()
             f.close()
 
-        #espaços contam?
+
         data = [ord(char) for char in rd]
 
     elif ext == "bmp":
@@ -98,7 +102,19 @@ def entropia(data, alfab):
     return H
 
 
+def nrmediobits(data):
+    codec = HuffmanCodec.from_data(data)
+    symbols, lenghts = codec.get_code_len()
+    # print(symbols)
+    # print(lenghts)
+    return symbols, lenghts
+
+
 if __name__ == "__main__":
-    [alfabeto, data] = lerficheiro("english.txt")
+    [alfabeto, data] = lerficheiro("guitarSolo.wav")
     entropia(data, alfabeto)
     criarhist(data, alfabeto)
+
+    symbols, lenght = nrmediobits(data)
+    print("Usando a codificação de Huffman...")
+    entropia(symbols, alfabeto)  # TODO: esta bem? ver se dá valores aceitaveis.
