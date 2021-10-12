@@ -112,13 +112,22 @@ def nrmediobits(data):
 def agrupar(data):
     if len(data) % 2 == 1:
         data = data[:-1]  # tiro o ultimo elemento
-
-    novafonte = []
-    for x in data:
+    
+    novafonte = [[0 for y in range(2)] for x in range(int(len(data) / 2))]
+    
+    i = 0
+    j = 0
+    
+    for x in range(int(len(data))):
         if x % 2 == 0:
-            novafonte.append(x)
+            
+            novafonte[i][j] = data[x]
+            j += 1
+            
         else:
-            novafonte.append(x)
+            novafonte[i][j] = data[x]
+            j = 0
+            i += 1
 
     print(f"{novafonte}")
     return novafonte
