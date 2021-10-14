@@ -45,11 +45,16 @@ def lerficheiro(nome):
     PATH = "./data/" + nome
 
     if ext == "txt":
-        # Caracteres ASCII, existe 127 caracteres ASCII
-        alfabeto = [x for x in range(0, 127 + 1)]
-
-        # TODO: espaços contam?
-        alfabeto.remove(32)  # tirar o espaço. ascii = 32
+        # Caracteres ASCII, queremos numeros,maiusculas e minusculas.
+        alfabeto = [x for x in range(48, 123)]
+        
+        #tirar todos os simbolos.
+        for i in range(58,65):
+            alfabeto.remove(i)
+        for i in range(91,97):
+            alfabeto.remove(i)  
+        
+        
         with open(PATH, "r", encoding='ASCII') as f:
             rd = f.read()
             f.close()
