@@ -196,4 +196,4 @@ if __name__ == "__main__":
 # 3.46587 bits/simbolo - homer.bmp valor normal
 # O limite mínimo teórico para o número médio de bits por símbolo da fonte dada codificada em Huffman é:
 # 3.54832 bits/simbolo - homer.bmp codificação huffman valor correto
-# 3.27755
+# 2.41273 bits/simbolo
