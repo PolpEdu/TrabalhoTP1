@@ -10,10 +10,8 @@ import time
 data = np.random.randint(0, 10, size=20)
 
 
-def criarhist(data, alfabeto):
-    ocorrencias = [data.count(i) for i in alfabeto]
+def criarhist(ocorrencias, alfabeto):
     # print(ocorrencias)
-
     # ppapra aparecer todos:
     # plt.xticks(range(len(ocorrencias)), alfabeto)
 
@@ -26,35 +24,21 @@ def criarhist(data, alfabeto):
     plt.show()
 
 
-def limitebits(data, alfab):
-    H = 0
-    for k in alfab:
-        p = list(data).count(k) / len(data)
-        if p == 0:  # o elemento do alfabeto não existe na fonte de informação
-            continue
-        i = math.log2(1 / p)
-        H += i * p
-
-    print(f"O limite mínimo teórico para o número"
-          f" médio de bits por símbolo da fonte dada é:\n{H:.5f} bits/simbolo")
-    return H
-
-
 def lerficheiro(nome):
     ext = nome.split(".")[1]
     PATH = "./data/" + nome
 
     if ext == "txt":
-        # Caracteres ASCII, queremos numeros,maiusculas e minusculas.
+        # Caracteres ASCII, existe 127 caracteres ASCII
         alfabeto = [x for x in range(48, 123)]
-        
-        #tirar todos os simbolos.
-        for i in range(58,65):
+
+        # nao devem entrar
+        # tirar todos os simbolos.
+        for i in range(58, 65):
             alfabeto.remove(i)
-        for i in range(91,97):
-            alfabeto.remove(i)  
-        
-        
+        for i in range(91, 97):
+            alfabeto.remove(i)  # tirar o espaço. ascii = 32
+
         with open(PATH, "r", encoding='ASCII') as f:
             rd = f.read()
             f.close()
@@ -86,18 +70,25 @@ def lerficheiro(nome):
         data = list(d[1])
         # print(type(data))
 
-    print(f"Alfabeto:{alfabeto}\n"
-          f"Data:{data}")
+    # print(f"Alfabeto:{alfabeto}\n"f"Data:{data}")
 
     return alfabeto, data
 
 
-def entropia(data, alfab):
+def entropia(ocorrencias, alfab):
     H = 0
-    for k in alfab:
-        p = list(data).count(k) / len(data)
+    somatotal = 0
+    ptotal = 0
+    # print(ocorrencias)
+    for x in ocorrencias:
+        somatotal += x
+
+    for k in range(len(alfab)):
+        p = ocorrencias[k] / somatotal
         if p == 0:  # o elemento do alfabeto não existe na fonte de informação
             continue
+        ptotal += p
+
         i = math.log2(1 / p)
         H += i * p
 
@@ -106,10 +97,11 @@ def entropia(data, alfab):
     return H
 
 
-def nrmediobits(data):
+def huffmancodec(data):
     codec = HuffmanCodec.from_data(data)
     symbols, lenghts = codec.get_code_len()
-    print(symbols)
+
+    # print(symbols)
     # print(lenghts)
     return symbols, lenghts
 
@@ -117,38 +109,91 @@ def nrmediobits(data):
 def agrupar(data):
     if len(data) % 2 == 1:
         data = data[:-1]  # tiro o ultimo elemento
-    
-    novafonte = [[0 for y in range(2)] for x in range(int(len(data) / 2))]
-    
+
+    novafonte = [[0 for y in range(2)] for x in range(int(len(data) / 2))] #agrupar por indice par e indice impar
     i = 0
     j = 0
-    
+
     for x in range(int(len(data))):
         if x % 2 == 0:
-            
+
             novafonte[i][j] = data[x]
             j += 1
-            
+
         else:
             novafonte[i][j] = data[x]
             j = 0
             i += 1
 
-    print(f"{novafonte}")
+    #print(f"Data agrupada:{novafonte}")
     return novafonte
 
 
-if __name__ == "__main__":
-    [alfabeto, data] = lerficheiro("english.txt")
-    entropia(data, alfabeto)
-    criarhist(data, alfabeto)
+def entropiaHuffman(length, symbols, ocorrencias):
+    numerador = 0
+    denominador = 0
+
+    for x in range(len(symbols)):
+        numerador += length[x] * ocorrencias[x]
+
+    """
+    print("s:" + str(symbols))
+    print("l:" + str(length))
+    print("o:" + str(ocorrencias))
+    """
+
+    for x in range(len(length)):
+        denominador += ocorrencias[x]
+
+    H = numerador / denominador
+
+    print(f"O limite mínimo teórico para o número"
+          f" médio de bits por símbolo da fonte dada codificada em Huffman é:\n{H:.5f} bits/simbolo")
+
+
+def main():
+    [alfabeto, data] = lerficheiro("homer.bmp")
+
+    ocorrencias = [data.count(i) for i in alfabeto]
+
+    # entropia normal:
+    H1 = entropia(ocorrencias, alfabeto)
+    print(f"O limite mínimo teórico para o número"
+          f" médio de bits por símbolo da fonte dada é:\n{H1:.5f} bits/simbolo")
+    criarhist(ocorrencias, alfabeto)
+
 
     # ex 4
-
-    symbols, lenght = nrmediobits(data)
-    print("Usando a codificação de Huffman...")
-    entropia(symbols, alfabeto)  # TODO: esta bem? ver se dá valores aceitaveis.
+    symbols, length = huffmancodec(data)
+    H2= entropiaHuffman(length, symbols,
+                    ocorrencias)  # entropia codificação de huffman = entropia normal + 1. No pior dos casos.
 
     # ex 5
-    dataagrupada = agrupar(data) # TODO: esta mal provavelmente
-    entropia(dataagrupada, alfabeto)
+    print("\nAgrupando a data...")
+    dataagrupada = agrupar(data)
+
+    alfabetoagrupado = []
+    for x in dataagrupada:
+        if x not in alfabetoagrupado:
+            alfabetoagrupado.append(x)
+
+    ocodataagrupada = [dataagrupada.count(i) for i in alfabetoagrupado]
+
+    print(ocodataagrupada)
+
+    # print("alfabeto agrupado:"+str(alfabetoagrupado))
+    h = entropia(ocodataagrupada, alfabetoagrupado)
+    #como temos dois simbolos por elemento do alfabeto se quiser o limite de bits por simbolo tenho que dividir por 2.
+    h = h/2
+    print(f"O limite mínimo teórico para o número"
+          f" médio de bits por símbolo da fonte dada é:\n{h:.5f} bits/simbolo")
+
+
+if __name__ == "__main__":
+    main()
+
+# O limite mínimo teórico para o número médio de bits por símbolo da fonte dada é:
+# 3.46587 bits/simbolo - homer.bmp valor normal
+# O limite mínimo teórico para o número médio de bits por símbolo da fonte dada codificada em Huffman é:
+# 3.54832 bits/simbolo - homer.bmp codificação huffman valor correto
+# 3.27755
