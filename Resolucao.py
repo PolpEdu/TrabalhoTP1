@@ -6,9 +6,10 @@ from scipy.io import wavfile
 import math
 from huffmancodec import *
 import time
+import sklearn.metrics as s
+
 
 data = np.random.randint(0, 10, size=20)
-
 
 def criarhist(ocorrencias, alfabeto):
     # print(ocorrencias)
@@ -151,8 +152,26 @@ def entropiaHuffman(length, symbols, ocorrencias):
           f" médio de bits por símbolo da fonte dada codificada em Huffman é:\n{H:.5f} bits/simbolo")
 
 
+def InfMut(query,target,alfabeto,passo):
+    infmutua = []
+    sublista = []
+    p = 0
+
+    while p < len(target) - len(query)+1:
+        for x in target[p:p + len(query)]:
+            sublista.append(x)
+
+        print(sublista, query)
+        #TODO: como meter isto a funcionar (esta a dar mal agora)
+        infmut = s.mutual_info_score(query,sublista) #TODO: perguntar ao stor se é na boa calcular a informação mutua
+        infmutua.append(infmut)
+        p += passo
+        sublista = []
+
+    return infmutua
+
 def main():
-    [alfabeto, data] = lerficheiro("homer.bmp")
+    [alfabeto, data] = lerficheiro("english.txt")
 
     ocorrencias = [data.count(i) for i in alfabeto]
 
@@ -165,8 +184,7 @@ def main():
 
     # ex 4
     symbols, length = huffmancodec(data)
-    H2= entropiaHuffman(length, symbols,
-                    ocorrencias)  # entropia codificação de huffman = entropia normal + 1. No pior dos casos.
+    H2= entropiaHuffman(length, symbols,ocorrencias)  # entropia codificação de huffman = entropia normal + 1. No pior dos casos.
 
     # ex 5
     print("\nAgrupando a data...")
@@ -187,6 +205,17 @@ def main():
     h = h/2
     print(f"O limite mínimo teórico para o número"
           f" médio de bits por símbolo da fonte dada é:\n{h:.5f} bits/simbolo")
+
+    # ex 6
+    # I(X,Y) - Informação mutua.
+    query = [2, 6, 4, 10, 5, 9, 5, 8, 0, 8];
+    target = [6, 8, 9,7, 2, 4, 9, 9, 4, 9, 1, 4, 8, 0, 1, 2, 2, 6, 3, 2, 0, 7, 4, 9, 5, 4,8, 5, 2, 7, 8, 0, 7, 4, 8, 5, 7, 4, 3, 2, 2, 7, 3, 5, 2, 7, 4, 9, 9, 6];
+    alfabeto = [0, 1, 2, 3,4,5,6,7,8,9, 10];
+    passo = 1
+
+    infm = InfMut(query,target,alfabeto,passo)
+    print(f"{infm}")
+
 
 
 if __name__ == "__main__":
