@@ -8,8 +8,8 @@ from huffmancodec import *
 import time
 import sklearn.metrics as s
 
-
 data = np.random.randint(0, 10, size=20)
+
 
 def criarhist(ocorrencias, alfabeto):
     # print(ocorrencias)
@@ -46,6 +46,8 @@ def lerficheiro(nome):
 
         data = [ord(char) for char in rd]
 
+
+
     elif ext == "bmp":
         # bmp os valores usados (preto a branco) vão de 0 a 255
         alfabeto = [x for x in range(0, 255 + 1)]
@@ -77,22 +79,9 @@ def lerficheiro(nome):
 
 
 def entropia(ocorrencias, alfab):
-    H = 0
-    somatotal = 0
-    ptotal = 0
-    # print(ocorrencias)
-    for x in ocorrencias:
-        somatotal += x
-
-    for k in range(len(alfab)):
-        p = ocorrencias[k] / somatotal
-        if p == 0:  # o elemento do alfabeto não existe na fonte de informação
-            continue
-        ptotal += p
-
-        i = math.log2(1 / p)
-        H += i * p
-
+    ocorrencias = np.array(ocorrencias)
+    p = ocorrencias[ocorrencias > 0] / np.sum(ocorrencias)
+    H = np.sum(p * np.log2(1 / p))
     print(f"O limite mínimo teórico para o número"
           f" médio de bits por símbolo da fonte dada é:\n{H:.5f} bits/simbolo")
     return H
@@ -111,7 +100,7 @@ def agrupar(data):
     if len(data) % 2 == 1:
         data = data[:-1]  # tiro o ultimo elemento
 
-    novafonte = [[0 for y in range(2)] for x in range(int(len(data) / 2))] #agrupar por indice par e indice impar
+    novafonte = [[0 for y in range(2)] for x in range(int(len(data) / 2))]  # agrupar por indice par e indice impar
     i = 0
     j = 0
 
@@ -126,16 +115,31 @@ def agrupar(data):
             j = 0
             i += 1
 
-    #print(f"Data agrupada:{novafonte}")
+    # print(f"Data agrupada:{novafonte}")
     return novafonte
 
 
-def entropiaHuffman(length, symbols, ocorrencias):
+def entropiaHuffman(length, symbols, ocorrencias, alfabeto):
     numerador = 0
     denominador = 0
 
+    print(alfabeto)
+    print(length, len(length))
+    print(symbols, len(symbols))
+    print(ocorrencias, len(ocorrencias))
+
+    # ordenar as ocorrencias
+    novasocoreencias = [0] * len(symbols)  # criar uma lista com o mesmo tamanho das ocorrencias
+    i = 0
+    for x in range(len(alfabeto)):
+        if alfabeto[x] == symbols[i]:
+            novasocoreencias[i] = ocorrencias[x]
+            i += 1
+
+    print(novasocoreencias)
+
     for x in range(len(symbols)):
-        numerador += length[x] * ocorrencias[x]
+        numerador += length[x] * novasocoreencias[x]
 
     """
     print("s:" + str(symbols))
@@ -143,35 +147,83 @@ def entropiaHuffman(length, symbols, ocorrencias):
     print("o:" + str(ocorrencias))
     """
 
-    for x in range(len(length)):
-        denominador += ocorrencias[x]
+    for x in range(len(novasocoreencias)):
+        denominador += novasocoreencias[x]
 
     H = numerador / denominador
 
+    # todo: ver se dá bem com o stor com as ocorrenciais ordenadas
+
+    # todo: calcular a variancia pela media tambem
+    V = 0
     print(f"O limite mínimo teórico para o número"
-          f" médio de bits por símbolo da fonte dada codificada em Huffman é:\n{H:.5f} bits/simbolo")
+          f" médio de bits por símbolo da fonte dada codificada em Huffman é:\n{H:.5f} bits/simbolo\n E a variancia é dada por: {V:.5f}")
 
 
-def InfMut(query,target,alfabeto,passo):
+def calcinfmut(query, sublista, alfabeto):
+    h1 = entropia(query, alfabeto)
+    h2 = entropia(sublista, alfabeto)
+
+    listacombos = []
+    contagens = []
+    c = 0
+    '''
+    for i in alfabeto:
+        for x in alfabeto:
+            for n in range(len(query)):
+                if query[n] == i:
+                    if sublista[n] == x:
+                        c +=1
+            contagens.append(c)
+            c=0
+    '''
+
+    for x in range(len(query)):
+        listacombos.append([query[x], sublista[x]])
+
+#todo: refazer:
+    listaoco = []
+    for i in range(len(listacombos)):
+        listaoco.append(listacombos.count(i))
+
+    print(listacombos)
+    print(contagens)
+    print("Len contagens:" + str(len(contagens)))
+    h1h2 = entropia(contagens, alfabeto)
+    infmut = h1 + h2 - h1h2
+    return infmut
+
+
+def InfMut(query, target, alfabeto, passo):
     infmutua = []
     sublista = []
     p = 0
 
-    while p < len(target) - len(query)+1:
+    while p < len(target) - len(query) + 1:
         for x in target[p:p + len(query)]:
             sublista.append(x)
 
-        print(sublista, query)
-        #TODO: como meter isto a funcionar (esta a dar mal agora)
-        infmut = s.mutual_info_score(query,sublista) #TODO: perguntar ao stor se é na boa calcular a informação mutua
+        print(sublista, "\n", query)
+
+        # tenho que dividir por log(2) para me dar o numero por bits.
+        infmut = calcinfmut(query, sublista, alfabeto)
+
+        infmut = round(infmut, 4)
         infmutua.append(infmut)
         p += passo
         sublista = []
 
     return infmutua
 
+
 def main():
-    [alfabeto, data] = lerficheiro("english.txt")
+    [alfabeto, dataA] = lerficheiro("english.txt")
+
+    # limpar a data com o nosso alfabeto
+    data = []
+    for x in dataA:
+        if x in alfabeto:
+            data.append(x)
 
     ocorrencias = [data.count(i) for i in alfabeto]
 
@@ -181,10 +233,10 @@ def main():
           f" médio de bits por símbolo da fonte dada é:\n{H1:.5f} bits/simbolo")
     criarhist(ocorrencias, alfabeto)
 
-
     # ex 4
     symbols, length = huffmancodec(data)
-    H2= entropiaHuffman(length, symbols,ocorrencias)  # entropia codificação de huffman = entropia normal + 1. No pior dos casos.
+    H2 = entropiaHuffman(length, symbols, ocorrencias,
+                         alfabeto)  # entropia codificação de huffman = entropia normal + 1. No pior dos casos.
 
     # ex 5
     print("\nAgrupando a data...")
@@ -201,21 +253,29 @@ def main():
 
     # print("alfabeto agrupado:"+str(alfabetoagrupado))
     h = entropia(ocodataagrupada, alfabetoagrupado)
-    #como temos dois simbolos por elemento do alfabeto se quiser o limite de bits por simbolo tenho que dividir por 2.
-    h = h/2
+    # como temos dois simbolos por elemento do alfabeto se quiser o limite de bits por simbolo tenho que dividir por 2.
+    h = h / 2
     print(f"O limite mínimo teórico para o número"
           f" médio de bits por símbolo da fonte dada é:\n{h:.5f} bits/simbolo")
 
     # ex 6
     # I(X,Y) - Informação mutua.
-    query = [2, 6, 4, 10, 5, 9, 5, 8, 0, 8];
-    target = [6, 8, 9,7, 2, 4, 9, 9, 4, 9, 1, 4, 8, 0, 1, 2, 2, 6, 3, 2, 0, 7, 4, 9, 5, 4,8, 5, 2, 7, 8, 0, 7, 4, 8, 5, 7, 4, 3, 2, 2, 7, 3, 5, 2, 7, 4, 9, 9, 6];
-    alfabeto = [0, 1, 2, 3,4,5,6,7,8,9, 10];
+
+    # Para teste:
+
+    query = [2, 6, 4, 10, 5, 9, 5, 8, 0, 8]
+    target = [6, 8, 9, 7, 2, 4, 9, 9, 4, 9, 1, 4, 8, 0, 1, 2, 2, 6, 3, 2, 0, 7, 4, 9, 5, 4, 8, 5, 2, 7, 8, 0, 7, 4, 8,
+              5, 7, 4, 3, 2, 2, 7, 3, 5, 2, 7, 4, 9, 9, 6]
+    alfabeto = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
     passo = 1
 
-    infm = InfMut(query,target,alfabeto,passo)
-    print(f"{infm}")
+    # [queryalfabeto, query] = lerficheiro("guitarsolo.wav")
+    # passo = len(query) / 4
 
+    # [alfabeto, data] = lerficheiro("english.txt")
+
+    infm = InfMut(query, target, alfabeto, passo)
+    print(f"InfoMutua ={infm}")
 
 
 if __name__ == "__main__":
