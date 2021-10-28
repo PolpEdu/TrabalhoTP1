@@ -82,8 +82,8 @@ def entropia(ocorrencias, alfab):
     ocorrencias = np.array(ocorrencias)
     p = ocorrencias[ocorrencias > 0] / np.sum(ocorrencias)
     H = np.sum(p * np.log2(1 / p))
-    print(f"O limite mínimo teórico para o número"
-          f" médio de bits por símbolo da fonte dada é:\n{H:.5f} bits/simbolo")
+    # print(f"O limite mínimo teórico para o número"
+    #      f" médio de bits por símbolo da fonte dada é:\n{H:.5f} bits/simbolo")
     return H
 
 
@@ -121,6 +121,7 @@ def agrupar(data):
 
 def entropiaHuffman(length, symbols, ocorrencias, alfabeto):
     numerador = 0
+    numerador2 = 0
     denominador = 0
 
     print(alfabeto)
@@ -140,6 +141,7 @@ def entropiaHuffman(length, symbols, ocorrencias, alfabeto):
 
     for x in range(len(symbols)):
         numerador += length[x] * novasocoreencias[x]
+        numerador2 += math.pow(length[x], 2) * novasocoreencias[x]
 
     """
     print("s:" + str(symbols))
@@ -150,14 +152,12 @@ def entropiaHuffman(length, symbols, ocorrencias, alfabeto):
     for x in range(len(novasocoreencias)):
         denominador += novasocoreencias[x]
 
-    H = numerador / denominador
+    E = numerador / denominador  # E(X)^2
+    E2 = numerador2 / denominador  # E(X^2)
+    V = E2 - math.pow(E, 2)  # formula da varianca
 
-    # todo: ver se dá bem com o stor com as ocorrenciais ordenadas
-
-    # todo: calcular a variancia pela media tambem
-    V = 0
     print(f"O limite mínimo teórico para o número"
-          f" médio de bits por símbolo da fonte dada codificada em Huffman é:\n{H:.5f} bits/simbolo\n E a variancia é dada por: {V:.5f}")
+          f" médio de bits por símbolo da fonte dada codificada em Huffman é:\n{E:.5f} bits/simbolo\n E a variancia é dada por: {V:.5f}")
 
 
 def calcinfmut(query, sublista, alfabeto):
@@ -181,7 +181,7 @@ def calcinfmut(query, sublista, alfabeto):
     for x in range(len(query)):
         listacombos.append([query[x], sublista[x]])
 
-#todo: refazer:
+    # todo: refazer:
     listaoco = []
     for i in range(len(listacombos)):
         listaoco.append(listacombos.count(i))
