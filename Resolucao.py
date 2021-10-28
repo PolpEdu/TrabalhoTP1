@@ -6,7 +6,6 @@ from scipy.io import wavfile
 import math
 from huffmancodec import *
 import time
-import sklearn.metrics as s
 
 data = np.random.randint(0, 10, size=20)
 
@@ -78,7 +77,7 @@ def lerficheiro(nome):
     return alfabeto, data
 
 
-def entropia(ocorrencias, alfab):
+def entropia(ocorrencias):
     ocorrencias = np.array(ocorrencias)
     p = ocorrencias[ocorrencias > 0] / np.sum(ocorrencias)
     H = np.sum(p * np.log2(1 / p))
@@ -157,39 +156,30 @@ def entropiaHuffman(length, symbols, ocorrencias, alfabeto):
     V = E2 - math.pow(E, 2)  # formula da varianca
 
     print(f"O limite mínimo teórico para o número"
-          f" médio de bits por símbolo da fonte dada codificada em Huffman é:\n{E:.5f} bits/simbolo\n E a variancia é dada por: {V:.5f}")
+          f" médio de bits por símbolo da fonte dada codificada em Huffman é:\n{E:.5f} bits/simbolo\n E a variancia é"
+          f" dada por: {V:.5f}")
 
 
 def calcinfmut(query, sublista, alfabeto):
-    h1 = entropia(query, alfabeto)
-    h2 = entropia(sublista, alfabeto)
+    h1 = entropia(query)
+    h2 = entropia(sublista)
 
     listacombos = []
-    contagens = []
-    c = 0
-    '''
-    for i in alfabeto:
-        for x in alfabeto:
-            for n in range(len(query)):
-                if query[n] == i:
-                    if sublista[n] == x:
-                        c +=1
-            contagens.append(c)
-            c=0
-    '''
 
     for x in range(len(query)):
-        listacombos.append([query[x], sublista[x]])
+        if [query[x], sublista[x]] or [sublista[x], query[x]] not in listacombos:
+            listacombos.append([query[x], sublista[x]])
 
-    # todo: refazer:
+    # todo: calcular entropia h1 interceção h2
     listaoco = []
-    for i in range(len(listacombos)):
-        listaoco.append(listacombos.count(i))
+    for i in alfabeto:
+        for j in alfabeto:
+            listaoco.append(listacombos.count([i, j])) #não sei pq é q esta a dar mal
 
     print(listacombos)
-    print(contagens)
-    print("Len contagens:" + str(len(contagens)))
-    h1h2 = entropia(contagens, alfabeto)
+    print(listaoco)
+    print("listaoco len:" + str(len(listaoco)))
+    h1h2 = entropia(listaoco)
     infmut = h1 + h2 - h1h2
     return infmut
 
@@ -203,7 +193,7 @@ def InfMut(query, target, alfabeto, passo):
         for x in target[p:p + len(query)]:
             sublista.append(x)
 
-        print(sublista, "\n", query)
+        print("\n" + str(sublista) + "\n" + str(query))
 
         # tenho que dividir por log(2) para me dar o numero por bits.
         infmut = calcinfmut(query, sublista, alfabeto)
@@ -228,7 +218,7 @@ def main():
     ocorrencias = [data.count(i) for i in alfabeto]
 
     # entropia normal:
-    H1 = entropia(ocorrencias, alfabeto)
+    H1 = entropia(ocorrencias)
     print(f"O limite mínimo teórico para o número"
           f" médio de bits por símbolo da fonte dada é:\n{H1:.5f} bits/simbolo")
     criarhist(ocorrencias, alfabeto)
@@ -252,7 +242,7 @@ def main():
     print(ocodataagrupada)
 
     # print("alfabeto agrupado:"+str(alfabetoagrupado))
-    h = entropia(ocodataagrupada, alfabetoagrupado)
+    h = entropia(ocodataagrupada)
     # como temos dois simbolos por elemento do alfabeto se quiser o limite de bits por simbolo tenho que dividir por 2.
     h = h / 2
     print(f"O limite mínimo teórico para o número"
@@ -262,7 +252,6 @@ def main():
     # I(X,Y) - Informação mutua.
 
     # Para teste:
-
     query = [2, 6, 4, 10, 5, 9, 5, 8, 0, 8]
     target = [6, 8, 9, 7, 2, 4, 9, 9, 4, 9, 1, 4, 8, 0, 1, 2, 2, 6, 3, 2, 0, 7, 4, 9, 5, 4, 8, 5, 2, 7, 8, 0, 7, 4, 8,
               5, 7, 4, 3, 2, 2, 7, 3, 5, 2, 7, 4, 9, 9, 6]
