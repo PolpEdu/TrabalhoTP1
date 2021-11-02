@@ -45,8 +45,6 @@ def lerficheiro(nome):
 
         data = [ord(char) for char in rd]
 
-
-
     elif ext == "bmp":
         # bmp os valores usados (preto a branco) vão de 0 a 255
         alfabeto = [x for x in range(0, 255 + 1)]
@@ -169,15 +167,15 @@ def calcinfmut(query, sublista, alfabeto):
 
     listacombos = []
 
-    for x in range(len(query)):
-        if [query[x], sublista[x]] or [sublista[x], query[x]] not in listacombos:
-            listacombos.append([query[x], sublista[x]])
+    for x in query:
+        for y in sublista:
+            listacombos.append([x, y])
 
-    # todo: calcular entropia h1 interceção h2
+    # todo: calcular entropia h1 interceção h2, ajuda stor, desculpe por favor, desespero
     listaoco = []
     for i in alfabeto:
         for j in alfabeto:
-            listaoco.append(listacombos.count([i, j])) #não sei pq é q esta a dar mal
+            listaoco.append(listacombos.count([i, j]))  # não sei pq é q esta a dar mal
 
     print(listacombos)
     print(listaoco)
@@ -221,10 +219,10 @@ def main():
     ocorrencias = [data.count(i) for i in alfabeto]
 
     # entropia normal:
-    H1 = entropia(ocorrencias)
+    H1 = entropia(ocorrencias)  # ex 2
     print(f"O limite mínimo teórico para o número"
           f" médio de bits por símbolo da fonte dada é:\n{H1:.5f} bits/simbolo")
-    criarhist(ocorrencias, alfabeto)
+    criarhist(ocorrencias, alfabeto)  # ex 1
 
     # ex 4
     symbols, length = huffmancodec(data)
