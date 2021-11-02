@@ -131,10 +131,13 @@ def entropiaHuffman(length, symbols, ocorrencias, alfabeto):
     # ordenar as ocorrencias
     novasocoreencias = [0] * len(symbols)  # criar uma lista com o mesmo tamanho das ocorrencias
     i = 0
+    
+    
     for x in range(len(alfabeto)):
-        if alfabeto[x] == symbols[i]:
-            novasocoreencias[i] = ocorrencias[x]
-            i += 1
+        if i != len(symbols):
+            if alfabeto[x] == symbols[i]:
+                novasocoreencias[i] = ocorrencias[x]
+                i += 1
 
     print(novasocoreencias)
 
@@ -207,7 +210,7 @@ def InfMut(query, target, alfabeto, passo):
 
 
 def main():
-    [alfabeto, dataA] = lerficheiro("english.txt")
+    [alfabeto, dataA] = lerficheiro("homer.bmp")
 
     # limpar a data com o nosso alfabeto
     data = []
