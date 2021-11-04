@@ -23,6 +23,22 @@ def criarhist(ocorrencias, alfabeto):
     plt.ylabel('Ocorrencias', fontsize=15)
     plt.show()
 
+def lerwavCanalDireito(nome):
+    ext = nome.split(".")[1]
+    PATH = "./data/" + nome
+    if ext == "wav":
+        print("Lendo "+ nome)
+        [fs, info] = wavfile.read(PATH)
+        max = math.pow(2, int(str(info.dtype).split("int")[1]))
+        alfabeto = [x for x in range(0, int(max + 1))]
+        d = [fs, info]
+        #print(d[1])
+        data = list(d[1])
+
+    # print(f"Data:{data}")
+
+    return alfabeto, data
+
 
 def lerficheiro(nome):
     ext = nome.split(".")[1]
@@ -164,9 +180,11 @@ def calcinfmut(query, sublista, alfabeto):
     ocoquery = []
     ocosublista = []
     for x in alfabeto:
+        print(x)
         ocoquery.append(query.count(x))
 
     for y in alfabeto:
+        print(y)
         ocosublista.append(sublista.count(y))
 
     # print(ocosublista)
@@ -180,11 +198,12 @@ def calcinfmut(query, sublista, alfabeto):
 
     listaintersecao = []
     for x in range(len(query)):
+        print(x)
         listaintersecao.append([query[x], sublista[x]])
 
-    # todo: calcular entropia h1 interceção h2, ajuda stor, desculpe por favor, desespero
     listaoco = []
     for y in listacombosalf:
+        print(y)
         listaoco.append(listaintersecao.count(y))
 
     #print(listacombosalf)
@@ -198,7 +217,9 @@ def calcinfmut(query, sublista, alfabeto):
     h1h2 = entropiaIntersecao(listaoco, len(listaintersecao))  # preciso de passar o tamanho da lista de intersecao
     h1 = entropia(ocoquery)
     h2 = entropia(ocosublista)
+
     infmut = h1 + h2 - h1h2
+    print(infmut,"=",h1,"+",h2,"-",h1h2)
     return infmut
 
 
@@ -213,16 +234,13 @@ def InfMut(query, target, alfabeto, passo):
     infmutua = []
     sublista = []
     p = 0
-
+    print("Calculando a informação mutua...")
     while p < len(target) - len(query) + 1:
+        print(p)
         for x in target[p:p + len(query)]:
             sublista.append(x)
 
-        print("\n" + str(sublista) + "\n" + str(query))
-
-        # tenho que dividir por log(2) para me dar o numero por bits.
         infmut = calcinfmut(query, sublista, alfabeto)
-
         infmut = round(infmut, 4)
         infmutua.append(infmut)
         p += passo
@@ -264,7 +282,7 @@ def main():
 
     ocodataagrupada = [dataagrupada.count(i) for i in alfabetoagrupado]
 
-    print(ocodataagrupada)
+    # print(ocodataagrupada)
 
     # print("alfabeto agrupado:"+str(alfabetoagrupado))
     h = entropia(ocodataagrupada)
@@ -273,11 +291,10 @@ def main():
     print(f"O limite mínimo teórico para o número"
           f" médio de bits por símbolo da fonte dada é:\n{h:.5f} bits/simbolo")
 
-    # ex 6
+    # ex 6:
     # I(X,Y) - Informação mutua.
-
-    # Para teste:
     '''
+    Para teste:
         query = [2, 6, 4, 10, 5, 9, 5, 8, 0, 8]
         target = [6, 8, 9, 7, 2, 4, 9, 9, 4, 9, 1, 4, 8, 0, 1, 2, 2, 6, 3, 2, 0, 7, 4, 9, 5, 4, 8, 5, 2, 7, 8, 0, 7, 4, 8,
               5, 7, 4, 3, 2, 2, 7, 3, 5, 2, 7, 4, 9, 9, 6]
@@ -286,23 +303,44 @@ def main():
         
     '''
 
-
-    [alfabeto, query] = lerficheiro("guitarsolo.wav")
-    [alfabeto1, target1] = lerficheiro("target01 - repeat.wav")
-    [alfabeto2, target2] = lerficheiro("target02 - repeatNoise.wav")
+    #6 b)
+    [alfabeto, query] = lerwavCanalDireito("guitarsolo.wav")
+    [alfabeto1, target1] = lerwavCanalDireito("target01 - repeat.wav")
+    [alfabeto2, target2] = lerwavCanalDireito("target02 - repeatNoise.wav")
     passo = round(len(query) / 4)
 
     if alfabeto != alfabeto1 or alfabeto != alfabeto2:
         print("Os alfabetos do query e target não coincidem. Não é possivel calcular a informação mútua entre eles.")
-
+        quit(1)
 
     infm = InfMut(query, target1, alfabeto, passo)
     print(f"InfoMutua entre \"guitarSolo.wav\" e \"target01 - repeat.wav\" ={infm}")
 
-    infm = InfMut(query, target2, alfabeto, passo)
-    print(f"InfoMutua entre \"guitarSolo.wav\" e \"target02 - repeatNoise.wav\" ={infm}")
+    infm2 = InfMut(query, target2, alfabeto, passo)
+    print(f"InfoMutua entre \"guitarSolo.wav\" e \"target02 - repeatNoise.wav\" ={infm2}")
+
+    #6 c)
+    print("Calcular o conjunto de todas as informações mútuas:")
+    infmutuas = informacoesmutuas(query,alfabeto)
+    print("Informações mútuas:"+infmutuas)
 
 
+def informacoesmutuas(query,alfabeto):
+    infsMuts = {}
+    passo = round(len(query)/4)
+
+    for x in range(1,8):
+        name = "Song0"+str(x)+".wav"
+        [alf,targ] = lerficheiro(name)
+        if alf != alfabeto:
+            print("Os alfabetos do query e target não coincidem.")
+            quit(1)
+        infmut = InfMut(query,targ,alf,passo)
+        ifs = []
+        infsMuts[name]= infmut
+        ifs = infsMuts.values().sort()
+        print("Informação mutua sorted:"+ ifs)
+    return infsMuts
 
 
 if __name__ == "__main__":
