@@ -121,10 +121,10 @@ def entropiaHuffman(length, symbols, ocorrencias, alfabeto):
     numerador2 = 0
     denominador = 0
 
-    print(alfabeto)
-    print(length, len(length))
-    print(symbols, len(symbols))
-    print(ocorrencias, len(ocorrencias))
+    # print(alfabeto)
+    # print(length, len(length))
+    # print(symbols, len(symbols))
+    # print(ocorrencias, len(ocorrencias))
 
     # ordenar as ocorrencias
     novasocoreencias = [0] * len(symbols)  # criar uma lista com o mesmo tamanho das ocorrencias
@@ -136,7 +136,7 @@ def entropiaHuffman(length, symbols, ocorrencias, alfabeto):
                 novasocoreencias[i] = ocorrencias[x]
                 i += 1
 
-    print(novasocoreencias)
+    # print(novasocoreencias)
 
     for x in range(len(symbols)):
         numerador += length[x] * novasocoreencias[x]
@@ -169,8 +169,8 @@ def calcinfmut(query, sublista, alfabeto):
     for y in alfabeto:
         ocosublista.append(sublista.count(y))
 
-    print(ocosublista)
-    print(ocoquery)
+    # print(ocosublista)
+    # print(ocoquery)
 
     listacombosalf = []
 
@@ -187,13 +187,13 @@ def calcinfmut(query, sublista, alfabeto):
     for y in listacombosalf:
         listaoco.append(listaintersecao.count(y))
 
-    print(listacombosalf)
-    print(listaintersecao)
-    print(listaoco)
-    print("listaoco len:" + str(len(listaoco)))
-    print("listaintersecao len:" + str(len(listaintersecao)))
-    print("listacombosalf len:" + str(len(listacombosalf)))
-    print("lista query len:" + str(len(query)))
+    #print(listacombosalf)
+    #print(listaintersecao)
+    #print(listaoco)
+    #print("listaoco len:" + str(len(listaoco)))
+    #print("listaintersecao len:" + str(len(listaintersecao)))
+    #print("listacombosalf len:" + str(len(listacombosalf)))
+    #print("lista query len:" + str(len(query)))
 
     h1h2 = entropiaIntersecao(listaoco, len(listaintersecao))  # preciso de passar o tamanho da lista de intersecao
     h1 = entropia(ocoquery)
@@ -277,19 +277,32 @@ def main():
     # I(X,Y) - Informação mutua.
 
     # Para teste:
-    query = [2, 6, 4, 10, 5, 9, 5, 8, 0, 8]
-    target = [6, 8, 9, 7, 2, 4, 9, 9, 4, 9, 1, 4, 8, 0, 1, 2, 2, 6, 3, 2, 0, 7, 4, 9, 5, 4, 8, 5, 2, 7, 8, 0, 7, 4, 8,
+    '''
+        query = [2, 6, 4, 10, 5, 9, 5, 8, 0, 8]
+        target = [6, 8, 9, 7, 2, 4, 9, 9, 4, 9, 1, 4, 8, 0, 1, 2, 2, 6, 3, 2, 0, 7, 4, 9, 5, 4, 8, 5, 2, 7, 8, 0, 7, 4, 8,
               5, 7, 4, 3, 2, 2, 7, 3, 5, 2, 7, 4, 9, 9, 6]
-    alfabeto = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-    passo = 1
+        alfabeto = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        passo = 1
+        
+    '''
 
-    # [queryalfabeto, query] = lerficheiro("guitarsolo.wav")
-    # passo = len(query) / 4
 
-    # [alfabeto, data] = lerficheiro("english.txt")
+    [alfabeto, query] = lerficheiro("guitarsolo.wav")
+    [alfabeto1, target1] = lerficheiro("target01 - repeat.wav")
+    [alfabeto2, target2] = lerficheiro("target02 - repeatNoise.wav")
+    passo = round(len(query) / 4)
 
-    infm = InfMut(query, target, alfabeto, passo)
-    print(f"InfoMutua ={infm}")
+    if alfabeto != alfabeto1 or alfabeto != alfabeto2:
+        print("Os alfabetos do query e target não coincidem. Não é possivel calcular a informação mútua entre eles.")
+
+
+    infm = InfMut(query, target1, alfabeto, passo)
+    print(f"InfoMutua entre \"guitarSolo.wav\" e \"target01 - repeat.wav\" ={infm}")
+
+    infm = InfMut(query, target2, alfabeto, passo)
+    print(f"InfoMutua entre \"guitarSolo.wav\" e \"target02 - repeatNoise.wav\" ={infm}")
+
+
 
 
 if __name__ == "__main__":
