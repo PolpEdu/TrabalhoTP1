@@ -129,8 +129,7 @@ def entropiaHuffman(length, symbols, ocorrencias, alfabeto):
     # ordenar as ocorrencias
     novasocoreencias = [0] * len(symbols)  # criar uma lista com o mesmo tamanho das ocorrencias
     i = 0
-    
-    
+
     for x in range(len(alfabeto)):
         if i != len(symbols):
             if alfabeto[x] == symbols[i]:
@@ -162,27 +161,52 @@ def entropiaHuffman(length, symbols, ocorrencias, alfabeto):
 
 
 def calcinfmut(query, sublista, alfabeto):
-    h1 = entropia(query)
-    h2 = entropia(sublista)
+    ocoquery = []
+    ocosublista = []
+    for x in alfabeto:
+        ocoquery.append(query.count(x))
 
-    listacombos = []
+    for y in alfabeto:
+        ocosublista.append(sublista.count(y))
 
-    for x in query:
-        for y in sublista:
-            listacombos.append([x, y])
+    print(ocosublista)
+    print(ocoquery)
+
+    listacombosalf = []
+
+    for x in alfabeto:
+        for y in alfabeto:
+            listacombosalf.append([x, y])
+
+    listaintersecao = []
+    for x in range(len(query)):
+        listaintersecao.append([query[x], sublista[x]])
 
     # todo: calcular entropia h1 interceção h2, ajuda stor, desculpe por favor, desespero
     listaoco = []
-    for i in alfabeto:
-        for j in alfabeto:
-            listaoco.append(listacombos.count([i, j]))  # não sei pq é q esta a dar mal
+    for y in listacombosalf:
+        listaoco.append(listaintersecao.count(y))
 
-    print(listacombos)
+    print(listacombosalf)
+    print(listaintersecao)
     print(listaoco)
     print("listaoco len:" + str(len(listaoco)))
-    h1h2 = entropia(listaoco)
+    print("listaintersecao len:" + str(len(listaintersecao)))
+    print("listacombosalf len:" + str(len(listacombosalf)))
+    print("lista query len:" + str(len(query)))
+
+    h1h2 = entropiaIntersecao(listaoco, len(listaintersecao))  # preciso de passar o tamanho da lista de intersecao
+    h1 = entropia(ocoquery)
+    h2 = entropia(ocosublista)
     infmut = h1 + h2 - h1h2
     return infmut
+
+
+def entropiaIntersecao(listaoco, lenlistaintersecao):
+    ocorrencias = np.array(listaoco)
+    p = ocorrencias[ocorrencias > 0] / lenlistaintersecao
+    H = -np.sum(p * np.log2(p))
+    return H
 
 
 def InfMut(query, target, alfabeto, passo):
@@ -208,7 +232,7 @@ def InfMut(query, target, alfabeto, passo):
 
 
 def main():
-    [alfabeto, dataA] = lerficheiro("homer.bmp")
+    [alfabeto, dataA] = lerficheiro("english.txt")
 
     # limpar a data com o nosso alfabeto
     data = []
