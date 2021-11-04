@@ -23,16 +23,17 @@ def criarhist(ocorrencias, alfabeto):
     plt.ylabel('Ocorrencias', fontsize=15)
     plt.show()
 
+
 def lerwavCanalDireito(nome):
     ext = nome.split(".")[1]
     PATH = "./data/" + nome
     if ext == "wav":
-        print("Lendo "+ nome)
+        print("Lendo " + nome)
         [fs, info] = wavfile.read(PATH)
         max = math.pow(2, int(str(info.dtype).split("int")[1]))
         alfabeto = [x for x in range(0, int(max + 1))]
         d = [fs, info]
-        #print(d[1])
+        # print(d[1])
         data = list(d[1])
 
     # print(f"Data:{data}")
@@ -179,12 +180,11 @@ def entropiaHuffman(length, symbols, ocorrencias, alfabeto):
 def calcinfmut(query, sublista, alfabeto):
     ocoquery = []
     ocosublista = []
-
     for x in alfabeto:
         ocoquery.append(np.count_nonzero(query == x))
 
     for y in alfabeto:
-        ocoquery.append(np.count_nonzero(query == y))
+        ocosublista.append(np.count_nonzero(sublista == y))
 
     # print(ocosublista)
     # print(ocoquery)
@@ -201,22 +201,22 @@ def calcinfmut(query, sublista, alfabeto):
 
     listaoco = []
     for y in listacombosalf:
-        np.count_nonzero(listaintersecao==y)
+        listaoco.append(np.count_nonzero(listaintersecao == y))
 
-    #print(listacombosalf)
-    #print(listaintersecao)
-    #print(listaoco)
-    #print("listaoco len:" + str(len(listaoco)))
-    #print("listaintersecao len:" + str(len(listaintersecao)))
-    #print("listacombosalf len:" + str(len(listacombosalf)))
-    #print("lista query len:" + str(len(query)))
+    # print(listacombosalf)
+    # print(listaintersecao)
+    # print(listaoco)
+    # print("listaoco len:" + str(len(listaoco)))
+    # print("listaintersecao len:" + str(len(listaintersecao)))
+    # print("listacombosalf len:" + str(len(listacombosalf)))
+    # print("lista query len:" + str(len(query)))
 
     h1h2 = entropiaIntersecao(listaoco, len(listaintersecao))  # preciso de passar o tamanho da lista de intersecao
     h1 = entropia(ocoquery)
     h2 = entropia(ocosublista)
 
     infmut = h1 + h2 - h1h2
-    print(infmut,"=",h1,"+",h2,"-",h1h2)
+    print(infmut, "=", h1, "+", h2, "-", h1h2)
     return infmut
 
 
@@ -242,7 +242,8 @@ def InfMut(query, target, alfabeto, passo):
         infmutua.append(infmut)
         p += passo
         sublista = []
-
+        
+    infmutua.sort()
     return infmutua
 
 
@@ -300,7 +301,7 @@ def main():
         
     '''
 
-    #6 b)
+    # 6 b)
     [alfabeto, query] = lerficheiro("guitarsolo.wav")
     [alfabeto1, target1] = lerficheiro("target01 - repeat.wav")
     [alfabeto2, target2] = lerficheiro("target02 - repeatNoise.wav")
@@ -316,26 +317,25 @@ def main():
     infm2 = InfMut(query, target2, alfabeto, passo)
     print(f"InfoMutua entre \"guitarSolo.wav\" e \"target02 - repeatNoise.wav\" ={infm2}")
 
-    #6 c)
+    # 6 c)
     print("Calcular o conjunto de todas as informações mútuas:")
-    infmutuas = informacoesmutuas(query,alfabeto)
-    print("Informações mútuas:"+infmutuas)
+    infmutuas = informacoesmutuas(query, alfabeto)
+    print("Informações mútuas:\n" + str(infmutuas))
 
 
-def informacoesmutuas(query,alfabeto):
+def informacoesmutuas(query, alfabeto):
     infsMuts = {}
-    passo = round(len(query)/4)
+    passo = round(len(query) / 4)
 
-    for x in range(1,8):
-        name = "Song0"+str(x)+".wav"
-        [alf,targ] = lerficheiro(name)
+    for x in range(1, 8):
+        name = "Song0" + str(x) + ".wav"
+        [alf, targ] = lerficheiro(name)
         if alf != alfabeto:
             print("Os alfabetos do query e target não coincidem.")
             quit(1)
-        infmut = InfMut(query,targ,alf,passo)
-        infsMuts[name]= infmut
-        ifs = infsMuts.values().sort()
-        print("Informação mutua sorted:"+ ifs)
+        infmut = InfMut(query, targ, alf, passo)
+
+        infsMuts[name] = infmut
     return infsMuts
 
 
