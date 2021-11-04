@@ -43,7 +43,7 @@ def lerwavCanalDireito(nome):
 def lerficheiro(nome):
     ext = nome.split(".")[1]
     PATH = "./data/" + nome
-
+    print("Lendo " + nome)
     if ext == "txt":
         # Caracteres ASCII, existe 127 caracteres ASCII
         alfabeto = [x for x in range(48, 123)]
@@ -87,7 +87,7 @@ def lerficheiro(nome):
         # print(type(data))
 
     # print(f"Alfabeto:{alfabeto}\n"f"Data:{data}")
-
+    print("Saved!")
     return alfabeto, data
 
 
@@ -179,13 +179,12 @@ def entropiaHuffman(length, symbols, ocorrencias, alfabeto):
 def calcinfmut(query, sublista, alfabeto):
     ocoquery = []
     ocosublista = []
+
     for x in alfabeto:
-        print(x)
-        ocoquery.append(query.count(x))
+        ocoquery.append(np.count_nonzero(query == x))
 
     for y in alfabeto:
-        print(y)
-        ocosublista.append(sublista.count(y))
+        ocoquery.append(np.count_nonzero(query == y))
 
     # print(ocosublista)
     # print(ocoquery)
@@ -198,13 +197,11 @@ def calcinfmut(query, sublista, alfabeto):
 
     listaintersecao = []
     for x in range(len(query)):
-        print(x)
         listaintersecao.append([query[x], sublista[x]])
 
     listaoco = []
     for y in listacombosalf:
-        print(y)
-        listaoco.append(listaintersecao.count(y))
+        np.count_nonzero(listaintersecao==y)
 
     #print(listacombosalf)
     #print(listaintersecao)
@@ -236,7 +233,7 @@ def InfMut(query, target, alfabeto, passo):
     p = 0
     print("Calculando a informação mutua...")
     while p < len(target) - len(query) + 1:
-        print(p)
+        # print(p)
         for x in target[p:p + len(query)]:
             sublista.append(x)
 
@@ -304,9 +301,9 @@ def main():
     '''
 
     #6 b)
-    [alfabeto, query] = lerwavCanalDireito("guitarsolo.wav")
-    [alfabeto1, target1] = lerwavCanalDireito("target01 - repeat.wav")
-    [alfabeto2, target2] = lerwavCanalDireito("target02 - repeatNoise.wav")
+    [alfabeto, query] = lerficheiro("guitarsolo.wav")
+    [alfabeto1, target1] = lerficheiro("target01 - repeat.wav")
+    [alfabeto2, target2] = lerficheiro("target02 - repeatNoise.wav")
     passo = round(len(query) / 4)
 
     if alfabeto != alfabeto1 or alfabeto != alfabeto2:
@@ -336,7 +333,6 @@ def informacoesmutuas(query,alfabeto):
             print("Os alfabetos do query e target não coincidem.")
             quit(1)
         infmut = InfMut(query,targ,alf,passo)
-        ifs = []
         infsMuts[name]= infmut
         ifs = infsMuts.values().sort()
         print("Informação mutua sorted:"+ ifs)
