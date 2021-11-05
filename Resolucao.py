@@ -178,19 +178,33 @@ def entropiaHuffman(length, symbols, ocorrencias, alfabeto):
 
 
 def calcinfmut(query, sublista, alfabeto):
-    ocoquery = []
-    ocosublista = []
-    for x in alfabeto:
-        ocoquery.append(np.count_nonzero(query == x))
 
-    for y in alfabeto:
-        ocosublista.append(np.count_nonzero(sublista == y))
+    dictocoquery = {}
+    for x in query:
+        x = str(x)
+        if x not in dictocoquery.keys():
+            dictocoquery[x] = 1
+        else:
+            dictocoquery[x] += 1
 
-    # print(ocosublista)
-    # print(ocoquery)
+    ocoquery = list(dictocoquery.values())
+
+    dictocosublista = {}
+    for x in sublista:
+        x = str(x)
+        if x not in dictocosublista.keys():
+            dictocosublista[x] = 1
+        else:
+            dictocosublista[x] += 1
+
+    ocosublista = list(dictocosublista.values())
+
+    print("query:")
+    print(query)
+    print("ocoquery:")
+    print(ocoquery)
 
     listacombosalf = []
-
     for x in alfabeto:
         for y in alfabeto:
             listacombosalf.append([x, y])
@@ -199,16 +213,24 @@ def calcinfmut(query, sublista, alfabeto):
     for x in range(len(query)):
         listaintersecao.append([query[x], sublista[x]])
 
-    listaoco = []
-    for y in listacombosalf:
-        listaoco.append(np.count_nonzero(listaintersecao == y))
+    dictoco = {}
+    for x in listaintersecao:
+        x = str(x)
+        if x not in dictoco.keys():
+            dictoco[x] = 1
+        else:
+            dictoco[x] +=1
+
+    listaoco = list(dictoco.values())
+    print(dictoco)
 
     # print(listacombosalf)
     # print(listaintersecao)
     # print(listaoco)
-    # print("listaoco len:" + str(len(listaoco)))
-    # print("listaintersecao len:" + str(len(listaintersecao)))
-    # print("listacombosalf len:" + str(len(listacombosalf)))
+
+    # print("listaoco :" + str(listaoco))
+    # print("listaintersecao :" + str(listaintersecao))
+    # print("listacombosalf len:" + str(listacombosalf))
     # print("lista query len:" + str(len(query)))
 
     h1h2 = entropiaIntersecao(listaoco, len(listaintersecao))  # preciso de passar o tamanho da lista de intersecao
@@ -216,7 +238,8 @@ def calcinfmut(query, sublista, alfabeto):
     h2 = entropia(ocosublista)
 
     infmut = h1 + h2 - h1h2
-    print(infmut, "=", h1, "+", h2, "-", h1h2)
+    # print(infmut, "=", h1, "+", h2, "-", h1h2)
+    # {'[2, 2]': 1, '[6, 7]': 1, '[4, 3]': 1, '[10, 5]': 1, '[5, 2]': 1, '[9, 7]': 1, '[5, 4]': 1, '[8, 9]': 1, '[0, 9]': 1, '[8, 6]': 1}
     return infmut
 
 
@@ -242,8 +265,9 @@ def InfMut(query, target, alfabeto, passo):
         infmutua.append(infmut)
         p += passo
         sublista = []
-        
-    infmutua.sort()
+    
+    print(infmutua)
+    infmutua.sort() #atenção! Está sorted! não vai bater com a solução exatamente
     return infmutua
 
 
@@ -293,13 +317,18 @@ def main():
     # I(X,Y) - Informação mutua.
     '''
     Para teste:
-        query = [2, 6, 4, 10, 5, 9, 5, 8, 0, 8]
-        target = [6, 8, 9, 7, 2, 4, 9, 9, 4, 9, 1, 4, 8, 0, 1, 2, 2, 6, 3, 2, 0, 7, 4, 9, 5, 4, 8, 5, 2, 7, 8, 0, 7, 4, 8,
-              5, 7, 4, 3, 2, 2, 7, 3, 5, 2, 7, 4, 9, 9, 6]
-        alfabeto = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-        passo = 1
+        
         
     '''
+
+    query = [2, 6, 4, 10, 5, 9, 5, 8, 0, 8]
+    target = [6, 8, 9, 7, 2, 4, 9, 9, 4, 9, 1, 4, 8, 0, 1, 2, 2, 6, 3, 2, 0, 7, 4, 9, 5, 4, 8, 5, 2, 7, 8, 0, 7, 4, 8,
+              5, 7, 4, 3, 2, 2, 7, 3, 5, 2, 7, 4, 9, 9, 6]
+    alfabeto = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    passo = 1
+
+    infm = InfMut(query, target, alfabeto, passo)
+    print(f"InfoMutua entre \"query\" e \"target\" ={infm}")
 
     # 6 b)
     [alfabeto, query] = lerficheiro("guitarsolo.wav")
