@@ -375,7 +375,7 @@ def informacoesmutuas(query, alfabeto):
 
 def infmax(dictinfmuts):
     for k, v in dictinfmuts.values():
-        print("Informação mútua máxima no wav \"" + k + "\" corresponde a " + v[0])
+        print("Informação mútua máxima no wav \"" + str(k) + "\" corresponde a " + str(v[0]))
 
 
 if __name__ == "__main__":
