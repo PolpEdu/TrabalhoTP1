@@ -178,7 +178,6 @@ def entropiaHuffman(length, symbols, ocorrencias, alfabeto):
 
 
 def calcinfmut(query, sublista, alfabeto):
-
     dictocoquery = {}
     for x in query:
         x = str(x)
@@ -199,10 +198,8 @@ def calcinfmut(query, sublista, alfabeto):
 
     ocosublista = list(dictocosublista.values())
 
-    print("query:")
-    print(query)
-    print("ocoquery:")
-    print(ocoquery)
+    #    print(query)
+    #   print(ocoquery)
 
     listacombosalf = []
     for x in alfabeto:
@@ -219,10 +216,11 @@ def calcinfmut(query, sublista, alfabeto):
         if x not in dictoco.keys():
             dictoco[x] = 1
         else:
-            dictoco[x] +=1
+            dictoco[x] += 1
 
     listaoco = list(dictoco.values())
-    print(dictoco)
+
+    # print(dictoco)
 
     # print(listacombosalf)
     # print(listaintersecao)
@@ -265,9 +263,11 @@ def InfMut(query, target, alfabeto, passo):
         infmutua.append(infmut)
         p += passo
         sublista = []
-    
-    print(infmutua)
-    infmutua.sort() #atenção! Está sorted! não vai bater com a solução exatamente
+
+    print("Calculado! - ", str(infmutua))
+    print("Sorting....")
+    infmutua.sort()  # atenção! Está sorted! não vai bater com a solução escrita exatamente no papel
+    infmutua.reverse()  # para ficar decrescente
     return infmutua
 
 
@@ -349,7 +349,12 @@ def main():
     # 6 c)
     print("Calcular o conjunto de todas as informações mútuas:")
     infmutuas = informacoesmutuas(query, alfabeto)
-    print("Informações mútuas:\n" + str(infmutuas))
+
+    for k, v in infmutuas.items():
+        print("Informações mútuas ordenadas por ordem decrescente do wav \"" + str(k) + "\":")
+        print(v)
+
+    infmax(infmutuas)  # função que dá print às informações mutuas máximas em cada ficheiro wav.
 
 
 def informacoesmutuas(query, alfabeto):
@@ -366,6 +371,11 @@ def informacoesmutuas(query, alfabeto):
 
         infsMuts[name] = infmut
     return infsMuts
+
+
+def infmax(dictinfmuts):
+    for k, v in dictinfmuts.values():
+        print("Informação mútua máxima no wav \"" + k + "\" corresponde a " + v[0])
 
 
 if __name__ == "__main__":
