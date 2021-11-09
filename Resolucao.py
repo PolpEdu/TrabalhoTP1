@@ -101,6 +101,11 @@ def entropia(ocorrencias):
     return H
 
 
+def compressao_max(alfabeto,entropia):
+    Hmax = np.log2(len(alfabeto))
+    return ((Hmax-entropia)/Hmax) * 100
+
+
 def huffmancodec(data):
     codec = HuffmanCodec.from_data(data)
     symbols, lenghts = codec.get_code_len()
@@ -284,8 +289,10 @@ def main():
 
     # entropia normal:
     H1 = entropia(ocorrencias)  # ex 2
+    CompMax = compressao_max(alfabeto, H1)
     print(f"O limite mínimo teórico para o número"
           f" médio de bits por símbolo da fonte dada é:\n{H1:.5f} bits/simbolo")
+    print(f"Compressão máxima da fonte dada:\n{CompMax:.2f} %") 
     criarhist(ocorrencias, alfabeto)  # ex 1
 
     # ex 4
@@ -331,7 +338,7 @@ def main():
     print(f"InfoMutua entre \"query\" e \"target\" ={infm}")
 
     # 6 b)
-    [alfabeto, query] = lerficheiro("guitarsolo.wav")
+    [alfabeto, query] = lerficheiro("guitarSolo.wav")
     [alfabeto1, target1] = lerficheiro("target01 - repeat.wav")
     [alfabeto2, target2] = lerficheiro("target02 - repeatNoise.wav")
     passo = round(len(query) / 4)
@@ -342,7 +349,6 @@ def main():
 
     infm = InfMut(query, target1, alfabeto, passo)
     print(f"InfoMutua entre \"guitarSolo.wav\" e \"target01 - repeat.wav\" ={infm}")
-
     infm2 = InfMut(query, target2, alfabeto, passo)
     print(f"InfoMutua entre \"guitarSolo.wav\" e \"target02 - repeatNoise.wav\" ={infm2}")
 
