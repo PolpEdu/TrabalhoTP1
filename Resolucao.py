@@ -101,17 +101,17 @@ def entropia(ocorrencias):
     return H
 
 
-def compressao_max(alfabeto,entropia):
+def compressao_max(alfabeto, entropia):
     Hmax = np.log2(len(alfabeto))
-    return ((Hmax-entropia)/Hmax) * 100
+    return ((Hmax - entropia) / Hmax) * 100
 
 
 def huffmancodec(data):
     codec = HuffmanCodec.from_data(data)
     symbols, lenghts = codec.get_code_len()
 
-    # print(symbols)
-    # print(lenghts)
+    # print(len(symbols))
+    # print(len(lenghts))
     return symbols, lenghts
 
 
@@ -152,30 +152,29 @@ def entropiaHuffman(length, symbols, ocorrencias, alfabeto):
     novasocoreencias = [0] * len(symbols)  # criar uma lista com o mesmo tamanho das ocorrencias
     i = 0
 
+    #contar as ocorrencias de cada simbolo na fonte
     for x in range(len(alfabeto)):
-        if i != len(symbols):
-            if alfabeto[x] == symbols[i]:
-                novasocoreencias[i] = ocorrencias[x]
+        if i != len(symbols): # para não dar overflow
+            if alfabeto[x] == symbols[i]: # se os simbolos tiverem o alfabeto
+                novasocoreencias[i] = ocorrencias[x] #adiciono a ocorrencia
                 i += 1
 
     # print(novasocoreencias)
 
-    for x in range(len(symbols)):
-        numerador += length[x] * novasocoreencias[x]
-        numerador2 += math.pow(length[x], 2) * novasocoreencias[x]
 
-    """
-    print("s:" + str(symbols))
-    print("l:" + str(length))
-    print("o:" + str(ocorrencias))
-    """
+
+    for x in range(len(symbols)):
+        numerador += length[x] * novasocoreencias[x] # contagens da media normal
+        numerador2 += math.pow(length[x], 2) * novasocoreencias[x] # vai servir para a varianca
+
+
 
     for x in range(len(novasocoreencias)):
-        denominador += novasocoreencias[x]
+        denominador += novasocoreencias[x] #somar todas as ocorrencias
 
     E = numerador / denominador  # E(X)^2
     E2 = numerador2 / denominador  # E(X^2)
-    V = E2 - math.pow(E, 2)  # formula da varianca
+    V = E2 - math.pow(E, 2)  # formula da varianca: V(x) = E(X^2) - E(X)^2
 
     print(f"O limite mínimo teórico para o número"
           f" médio de bits por símbolo da fonte dada codificada em Huffman é:\n{E:.5f} bits/simbolo\n E a variancia é"
@@ -259,7 +258,6 @@ def InfMut(query, target, alfabeto, passo):
     p = 0
     print("Calculando a informação mutua...")
     while p < len(target) - len(query) + 1:
-        # print(p)
         for x in target[p:p + len(query)]:
             sublista.append(x)
 
@@ -277,7 +275,7 @@ def InfMut(query, target, alfabeto, passo):
 
 
 def main():
-    [alfabeto, dataA] = lerficheiro("english.txt")
+    [alfabeto, dataA] = lerficheiro("guitarsolo.wav")
 
     # limpar a data com o nosso alfabeto
     data = []
@@ -292,13 +290,17 @@ def main():
     CompMax = compressao_max(alfabeto, H1)
     print(f"O limite mínimo teórico para o número"
           f" médio de bits por símbolo da fonte dada é:\n{H1:.5f} bits/simbolo")
-    print(f"Compressão máxima da fonte dada:\n{CompMax:.2f} %") 
-    criarhist(ocorrencias, alfabeto)  # ex 1
+    print(f"Compressão máxima da fonte dada:\n{CompMax:.2f} %")
+    #criarhist(ocorrencias, alfabeto)  # ex 1
 
     # ex 4
     symbols, length = huffmancodec(data)
+    # print("Hffman")
+    # print(symbols)
+    # print(length)
     H2 = entropiaHuffman(length, symbols, ocorrencias,
                          alfabeto)  # entropia codificação de huffman = entropia normal + 1. No pior dos casos.
+
 
     # ex 5
     print("\nAgrupando a data...")
@@ -320,12 +322,14 @@ def main():
     print(f"O limite mínimo teórico para o número"
           f" médio de bits por símbolo da fonte dada é:\n{h:.5f} bits/simbolo")
 
+    #criarhist(ocodataagrupada, alfabeto)
+
     # ex 6:
     # I(X,Y) - Informação mutua.
     '''
     Para teste:
-        
-        
+
+
     '''
 
     query = [2, 6, 4, 10, 5, 9, 5, 8, 0, 8]
