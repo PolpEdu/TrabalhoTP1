@@ -268,7 +268,7 @@ def InfMut(query, target, passo):
 
 
 def main():
-    [alfabeto, dataA] = lerficheiro("guitarsolo.wav")
+    [alfabeto, dataA] = lerficheiro("english.txt")
 
     # limpar a data com o nosso alfabeto
     data = []
@@ -375,7 +375,7 @@ def informacoesmutuas(query, alfabeto):
 
 
 def infmax(dictinfmuts):
-    for k, v in dictinfmuts.values():
+    for k, v in dictinfmuts.items():
         print("Informação mútua máxima no wav \"" + str(k) + "\" corresponde a " + str(v[0]))
 
 
