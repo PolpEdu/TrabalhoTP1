@@ -181,48 +181,31 @@ def entropiaHuffman(length, symbols, ocorrencias, alfabeto):
           f" dada por: {V:.5f}")
 
 
-def calcinfmut(query, sublista, alfabeto):
-    dictocoquery = {}
-    for x in query:
-        x = str(x)
-        if x not in dictocoquery.keys():
-            dictocoquery[x] = 1
-        else:
-            dictocoquery[x] += 1
-
-    ocoquery = list(dictocoquery.values())
-
+def calcinfmut(query, sublista, ocoquery):
     dictocosublista = {}
-    for x in sublista:
+    for x in sublista: # para cada valor na sublista
         x = str(x)
         if x not in dictocosublista.keys():
             dictocosublista[x] = 1
         else:
-            dictocosublista[x] += 1
+            dictocosublista[x] += 1 # valor ja existe no dicionario, adiciona 1
 
-    ocosublista = list(dictocosublista.values())
-
-    #    print(query)
-    #   print(ocoquery)
-
-    listacombosalf = []
-    for x in alfabeto:
-        for y in alfabeto:
-            listacombosalf.append([x, y])
+    ocosublista = list(dictocosublista.values()) # passa os valores do dicionario para uma lista
 
     listaintersecao = []
     for x in range(len(query)):
-        listaintersecao.append([query[x], sublista[x]])
+        listaintersecao.append([query[x], sublista[x]]) #lista de interseção das duas listas
 
     dictoco = {}
-    for x in listaintersecao:
+    for x in listaintersecao:  # para cada valor na lista da interseção
         x = str(x)
+        # contar as suas ocorrencias
         if x not in dictoco.keys():
-            dictoco[x] = 1
+            dictoco[x] = 1  # chave ainda não está no dicionario
         else:
-            dictoco[x] += 1
+            dictoco[x] += 1  # chave no dicionario, adicionar 1 à ocorrencia.
 
-    listaoco = list(dictoco.values())
+    listaoco = list(dictoco.values())# passar para lista todos os objetos do dicionario.
 
     # print(dictoco)
 
@@ -235,13 +218,12 @@ def calcinfmut(query, sublista, alfabeto):
     # print("listacombosalf len:" + str(listacombosalf))
     # print("lista query len:" + str(len(query)))
 
-    h1h2 = entropiaIntersecao(listaoco, len(listaintersecao))  # preciso de passar o tamanho da lista de intersecao
+    # preciso de passar o tamanho da lista de intersecao para calcular a entropia
+    h1h2 = entropiaIntersecao(listaoco, len(listaintersecao))
     h1 = entropia(ocoquery)
     h2 = entropia(ocosublista)
 
     infmut = h1 + h2 - h1h2
-    # print(infmut, "=", h1, "+", h2, "-", h1h2)
-    # {'[2, 2]': 1, '[6, 7]': 1, '[4, 3]': 1, '[10, 5]': 1, '[5, 2]': 1, '[9, 7]': 1, '[5, 4]': 1, '[8, 9]': 1, '[0, 9]': 1, '[8, 6]': 1}
     return infmut
 
 
@@ -261,7 +243,18 @@ def InfMut(query, target, alfabeto, passo):
         for x in target[p:p + len(query)]:
             sublista.append(x)
 
-        infmut = calcinfmut(query, sublista, alfabeto)
+
+        dictocoquery = {}
+        for x in query:  # para cada valor na query
+            x = str(x)
+            if x not in dictocoquery.keys():  # anota a sua ocorrencia no dicionario
+                dictocoquery[x] = 1
+            else:
+                dictocoquery[x] += 1  # valor ja existe no dicionario, adiciona 1
+        ocoquery = list(dictocoquery.values())  # passa os valores do dicionario para uma lista
+
+
+        infmut = calcinfmut(query, sublista, ocoquery)
         infmut = round(infmut, 4)
         infmutua.append(infmut)
         p += passo
@@ -328,8 +321,6 @@ def main():
     # I(X,Y) - Informação mutua.
     '''
     Para teste:
-
-
     '''
 
     query = [2, 6, 4, 10, 5, 9, 5, 8, 0, 8]
