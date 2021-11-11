@@ -234,7 +234,7 @@ def entropiaIntersecao(listaoco, lenlistaintersecao):
     return H
 
 
-def InfMut(query, target, alfabeto, passo):
+def InfMut(query, target, passo):
     infmutua = []
     sublista = []
     p = 0
@@ -329,7 +329,7 @@ def main():
     alfabeto = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
     passo = 1
 
-    infm = InfMut(query, target, alfabeto, passo)
+    infm = InfMut(query, target, passo)
     print(f"InfoMutua entre \"query\" e \"target\" ={infm}")
 
     # 6 b)
@@ -342,9 +342,9 @@ def main():
         print("Os alfabetos do query e target não coincidem. Não é possivel calcular a informação mútua entre eles.")
         quit(1)
 
-    infm = InfMut(query, target1, alfabeto, passo)
+    infm = InfMut(query, target1, passo)
     print(f"InfoMutua entre \"guitarSolo.wav\" e \"target01 - repeat.wav\" ={infm}")
-    infm2 = InfMut(query, target2, alfabeto, passo)
+    infm2 = InfMut(query, target2, passo)
     print(f"InfoMutua entre \"guitarSolo.wav\" e \"target02 - repeatNoise.wav\" ={infm2}")
 
     # 6 c)
@@ -368,7 +368,7 @@ def informacoesmutuas(query, alfabeto):
         if alf != alfabeto:
             print("Os alfabetos do query e target não coincidem.")
             quit(1)
-        infmut = InfMut(query, targ, alf, passo)
+        infmut = InfMut(query, targ, passo)
 
         infsMuts[name] = infmut
     return infsMuts
