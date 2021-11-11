@@ -261,6 +261,8 @@ def InfMut(query, target, passo):
         sublista = []
 
     print("Calculado! - ", str(infmutua))
+    plt.plot(infmutua)  # para fazer o plot das respetivas informações mutuas ao longo do tempo.
+    plt.show()  # mostrar o plot.
     print("Sorting....")
     infmutua.sort()  # atenção! Está sorted! não vai bater com a solução escrita exatamente no papel
     infmutua.reverse()  # para ficar decrescente
